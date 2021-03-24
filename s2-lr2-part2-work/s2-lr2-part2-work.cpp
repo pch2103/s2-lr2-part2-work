@@ -5,6 +5,10 @@
 //	*imya, 	// именем и отчеством
 //	*otchestvo;
 
+//Тестовая программа №2 :
+//-- Выполнить все действия Тестовой программы №1
+//-- Создать объект класса clinic, используя конструктор с параметрами – это эталонный объект(ЭО)
+//-- Найти ЭО в базе, если не найдено, то дополнить базу на основе копирования ЭО. Если найдено, то посчитать количество найденных ЭО.
 
 #include <iostream>
 #include <cstring>
@@ -36,9 +40,9 @@ public:
 		strcpy(otchestvo, "");
 	}
 
-	fio(char* _fio) //конструктор c параметрами в виде одной строки
+	fio(const char* _fio) //конструктор c параметрами в виде одной строки
 	{
-		std::cout << "fio::Kонструктор c параметрами в виде массива" << std::endl;
+		std::cout << "fio::Kонструктор c параметрами в виде одной строки" << std::endl;
 
 		char buff[3][CHARACTER_WITH] = { "", "", "" };
 		sscanf(_fio, "%s %s %s", buff[0], buff[1], buff[2]);
@@ -149,7 +153,7 @@ public:
 
 	//ДФ - дружественные функции ===============================================
 	void friend showOneRecord(Clinic, int); //
-	void friend fioSearch(Clinic*); //
+	int friend fioSearch(Clinic*, char* F); //
 
 	//МК - методы класса ===============================================
 	Clinic* loadRecords();
@@ -169,7 +173,7 @@ int Clinic::count = 0;
 //протоипы функций
 void showAllRecords(Clinic*); //показывает все записи в памяти
 void showRecordHeader(const char*); //вывод заголовка таблицы для записей
-//void fioSeparate(char*, const char T[]);
+Clinic* testProgrammNumber2(Clinic*); //Тестовая программа номер 2
 int menu(); //Меню функций базы
 
 int main()
@@ -184,6 +188,8 @@ int main()
 
 
 	myClynic = myClynic->loadRecords();
+	
+	myClynic = testProgrammNumber2(myClynic); //Тестовая программа номер 2
 
 	do {
 		choice = menu();
@@ -198,7 +204,7 @@ int main()
 			showAllRecords(myClynic);
 			break;
 					case 3: //3 - Поиск по ФИО
-						fioSearch(myClynic);  //Поиск по ФИО (ДФ)
+						fioSearch(myClynic, nullptr);  //Поиск по ФИО (ДФ)
 						break;
 					case 4: //4 - Фильтр по квалификации
 						myClynic->qualificationFilter();  //Фильтрует вывод по квалификации
@@ -219,6 +225,27 @@ int main()
 	return 0;
 } //main
 
+//FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+// ТЕСТОВАЯ ПРОГРАММА НОМЕР 2
+//FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
+Clinic* testProgrammNumber2(Clinic* CL) //Тестовая программа номер 2
+{
+	std::cout << "---ТЕСТОВАЯ ПРОГРАММА НОМЕР 2 :: НАЧАЛО---ТЕСТОВАЯ ПРОГРАММА НОМЕР 2 :: НАЧАЛО---ТЕСТОВАЯ ПРОГРАММА НОМЕР 2 :: НАЧАЛО---" << std::endl;
+	char _fio[FIO_WITH] = "Аристархов Аристарх Аристархович";
+	fio testFio(_fio); //fio для теста
+	Clinic testClinic(testFio); //Эталонный объект (ЭО) - конструктор с параметрами
+
+	int answer = fioSearch(CL, _fio);
+	std::cout << "!!!! Найдено эталонных объектов (ЭО): " << answer << std::endl;
+	if (answer == 0) {
+		std::cout << "!!!! База будет дополнена эталонным объектом (ЭО): " << std::endl;
+		CL = testClinic.addNewRecord(CL);
+	}
+	std::cout << "---ТЕСТОВАЯ ПРОГРАММА НОМЕР 2 :: КОНЕЦ---ТЕСТОВАЯ ПРОГРАММА НОМЕР 2 :: КОНЕЦ---ТЕСТОВАЯ ПРОГРАММА НОМЕР 2 :: КОНЕЦ" << std::endl;
+
+	return CL;
+}
 
 //FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 // РЕАЛИЗАЦИЯ МЕТОДОВ
@@ -352,15 +379,19 @@ void Clinic::sortRecordsByAlpha() //Сортировка базы (в памяти) в алфавитном поря
 	showAllRecords(this);
 } //sortRecordsByAlpha()
 
-void fioSearch(Clinic* CL)  //Поиск по ФИО (ДФ)
+int fioSearch(Clinic* CL, char* _fio)  //Поиск по ФИО (ДФ)
 {
 	int count = 0;
 	int amount = CL->get_count();
-	char _fio[FIO_WITH];
+	char buffer[FIO_WITH];
 
-	std::cout << "===============================================================================================" << std::endl;
-	std::cout << "Ведите ФИО врача для поиска: ";
-	std::cin.getline(_fio, FIO_WITH);
+	if (_fio == nullptr) { //не передана ФИО для поиска - нужно вводить с клавиатуры
+		std::cout << "===============================================================================================" << std::endl;
+		std::cout << "Ведите ФИО врача для поиска: ";
+		std::cin.getline(buffer, FIO_WITH);
+		_fio = new char[strlen(buffer) + 1];
+		strcpy(_fio, buffer);
+	}
 
 	std::cout << "===============================================================================================" << std::endl;
 
@@ -374,6 +405,8 @@ void fioSearch(Clinic* CL)  //Поиск по ФИО (ДФ)
 	} //for
 	if (count == 0) std::cout << "Записей для введенных ФИО нет" << std::endl;
 	std::cout << "===============================================================================================" << std::endl;
+
+	return count; //возвращаем количество найденных записей
 } //fioSearch()
 
 void Clinic::qualificationFilter()  //Фильтрует вывод по квалификации
