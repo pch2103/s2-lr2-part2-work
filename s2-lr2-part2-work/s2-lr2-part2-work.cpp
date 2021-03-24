@@ -66,6 +66,9 @@ public:
 	fio& operator= (const fio &F) // Перегрузка оператора "="
 	{
 		std::cout << "fio::Оператор =" << std::endl;
+
+		if (this == &F) return *this; //самоприсваивание
+
 		delete[] familia;
 		delete[] imya;
 		delete[] otchestvo;
@@ -134,6 +137,8 @@ public:
 
 	Clinic& operator= (const Clinic &CL) // Перегрузка оператора "="
 	{
+		if (this == &CL) return *this; //самоприсваивание
+
 		std::cout << "Clinic::Оператор =" << std::endl;
 		doctorFio = CL.doctorFio;
 		specialty = CL.specialty;
@@ -192,18 +197,18 @@ int main()
 		case 2: //2 - Показать все записи
 			showAllRecords(myClynic);
 			break;
-			//		case 3: //3 - Поиск по ФИО
-			//			fioSearch(myClynic);  //Поиск по ФИО (ДФ)
-			//			break;
-			//		case 4: //4 - Фильтр по квалификации
-			//			myClynic->qualificationFilter();  //Фильтрует вывод по квалификации
-			//			break;
-			//		case 5: //5 - Фильтр по специальности
-			//			myClynic->specialtyFilter();  //Фильтрует вывод по специальности
-			//			break;
-			//		case 6: //6 - Сортировка в алфавитном порядке
-			//			myClynic->sortRecordsByAlpha();
-			//			break;
+					case 3: //3 - Поиск по ФИО
+						fioSearch(myClynic);  //Поиск по ФИО (ДФ)
+						break;
+					case 4: //4 - Фильтр по квалификации
+						myClynic->qualificationFilter();  //Фильтрует вывод по квалификации
+						break;
+					case 5: //5 - Фильтр по специальности
+						myClynic->specialtyFilter();  //Фильтрует вывод по специальности
+						break;
+					case 6: //6 - Сортировка в алфавитном порядке
+						myClynic->sortRecordsByAlpha();
+						break;
 		default:
 			break;
 		}
@@ -328,96 +333,96 @@ Clinic* Clinic::addNewRecord(Clinic* P) //выделение памяти под новую структу и з
 	return P;
 } // addNewRecord()
 
-//void Clinic::sortRecordsByAlpha() //Сортировка базы (в памяти) в алфавитном порядке
-//{
-//	int i, j, amount = this->get_count();
-//
-//	Clinic T;
-//
-//	for (i = 0; i < amount; ++i) {
-//		for (j = i + 1; j < amount; ++j) {
-//			if (strcmp(this[i].fio, this[j].fio) > 0) {
-//				T = this[i];
-//				this[i] = this[j];
-//				this[j] = T;
-//			}
-//		} //for j
-//	} //for i
-//
-//	showAllRecords(this);
-//} //sortRecordsByAlpha()
+void Clinic::sortRecordsByAlpha() //Сортировка базы (в памяти) в алфавитном порядке
+{
+	int i, j, amount = this->get_count();
 
-//void fioSearch(Clinic* CL)  //Поиск по ФИО (ДФ)
-//{
-//	int count = 0;
-//	int amount = CL->get_count();
-//	char _fio[FIO_WITH];
-//
-//	std::cout << "===============================================================================================" << std::endl;
-//	std::cout << "Ведите ФИО врача для поиска: ";
-//	std::cin.getline(_fio, FIO_WITH);
-//
-//	std::cout << "===============================================================================================" << std::endl;
-//
-//	showRecordHeader("Поиск по ФИО врача:");
-//
-//	for (int i = 0; i < amount; ++i) {
-//		if (strcmp(_fio, CL[i].fio) == 0) {
-//			++count;
-//			showOneRecord(CL[i], count);
-//		}
-//	} //for
-//	if (count == 0) std::cout << "Записей для введенных ФИО нет" << std::endl;
-//	std::cout << "===============================================================================================" << std::endl;
-//} //qualificationFilter()
+	Clinic T;
 
-//void Clinic::qualificationFilter()  //Фильтрует вывод по квалификации
-//{
-//	int amount = this->get_count();
-//	int qual;
-//
-//	do
-//	{
-//		std::cout << "===============================================================================================" << std::endl;
-//		std::cout << "Код квалификации (0-высшая, 1-первая, 2-вторая): ";
-//		std::cin >> qual;
-//		std::cin.get();
-//	} while (qual < 0 || qual > 2);
-//	std::cout << "===============================================================================================" << std::endl;
-//
-//	showRecordHeader("Фильтр по квалификации:");
-//
-//	for (int i = 0; i < amount; ++i) {
-//		if (qual == this[i].qualification) {
-//			showOneRecord(this[i], i + 1);
-//		}
-//	} //for
-//	std::cout << "===============================================================================================" << std::endl;
-//} //qualificationFilter()
-//
-//void Clinic::specialtyFilter()  //Фильтрует вывод по специальности
-//{
-//	int amount = this->get_count();
-//	int spec;
-//
-//	do
-//	{
-//		std::cout << "===============================================================================================" << std::endl;
-//		std::cout << "Код специальности (1-терапевт, 2-кардиолог, 3-стоматолог): ";
-//		std::cin >> spec;
-//		std::cin.get();
-//	} while (spec < 0 || spec > 2);
-//	std::cout << "===============================================================================================" << std::endl;
-//
-//	showRecordHeader("Фильтр по специальности:");
-//
-//	for (int i = 0; i < amount; ++i) {
-//		if (spec == this[i].specialty) {
-//			showOneRecord(this[i], i + 1);
-//		}
-//	} //for
-//	std::cout << "===============================================================================================" << std::endl;
-//} //specialtyFilter()
+	for (i = 0; i < amount; ++i) {
+		for (j = i + 1; j < amount; ++j) {
+			if (strcmp(this[i].doctorFio.getFio(), this[j].doctorFio.getFio()) > 0) {
+				T = this[i];
+				this[i] = this[j];
+				this[j] = T;
+			}
+		} //for j
+	} //for i
+
+	showAllRecords(this);
+} //sortRecordsByAlpha()
+
+void fioSearch(Clinic* CL)  //Поиск по ФИО (ДФ)
+{
+	int count = 0;
+	int amount = CL->get_count();
+	char _fio[FIO_WITH];
+
+	std::cout << "===============================================================================================" << std::endl;
+	std::cout << "Ведите ФИО врача для поиска: ";
+	std::cin.getline(_fio, FIO_WITH);
+
+	std::cout << "===============================================================================================" << std::endl;
+
+	showRecordHeader("Поиск по ФИО врача:");
+
+	for (int i = 0; i < amount; ++i) {
+		if (strcmp(_fio, CL[i].doctorFio.getFio()) == 0) {
+			++count;
+			showOneRecord(CL[i], count);
+		}
+	} //for
+	if (count == 0) std::cout << "Записей для введенных ФИО нет" << std::endl;
+	std::cout << "===============================================================================================" << std::endl;
+} //fioSearch()
+
+void Clinic::qualificationFilter()  //Фильтрует вывод по квалификации
+{
+	int amount = this->get_count();
+	int qual;
+
+	do
+	{
+		std::cout << "===============================================================================================" << std::endl;
+		std::cout << "Код квалификации (0-высшая, 1-первая, 2-вторая): ";
+		std::cin >> qual;
+		std::cin.get();
+	} while (qual < 0 || qual > 2);
+	std::cout << "===============================================================================================" << std::endl;
+
+	showRecordHeader("Фильтр по квалификации:");
+
+	for (int i = 0; i < amount; ++i) {
+		if (qual == this[i].qualification) {
+			showOneRecord(this[i], i + 1);
+		}
+	} //for
+	std::cout << "===============================================================================================" << std::endl;
+} //qualificationFilter()
+
+void Clinic::specialtyFilter()  //Фильтрует вывод по специальности
+{
+	int amount = this->get_count();
+	int spec;
+
+	do
+	{
+		std::cout << "===============================================================================================" << std::endl;
+		std::cout << "Код специальности (1-терапевт, 2-кардиолог, 3-стоматолог): ";
+		std::cin >> spec;
+		std::cin.get();
+	} while (spec < 0 || spec > 2);
+	std::cout << "===============================================================================================" << std::endl;
+
+	showRecordHeader("Фильтр по специальности:");
+
+	for (int i = 0; i < amount; ++i) {
+		if (spec == this[i].specialty) {
+			showOneRecord(this[i], i + 1);
+		}
+	} //for
+	std::cout << "===============================================================================================" << std::endl;
+} //specialtyFilter()
 
 void showRecordHeader(const char* title) //вспомогательная функция - печать заголовка таблицы
 {
